@@ -1,0 +1,255 @@
+
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090a0a">
+  <meta name="description" content="Видеоархив MOVIQ TV — передачи и записи эфиров.">
+  <title>Видеоархив — MOVIQ TV</title>
+  <link rel="icon" type="image/svg+xml" href="moviq-logo.svg">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .archive-page {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 64px 0 100px;
+    }
+    .archive-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .archive-heading h1 {
+      font-size: clamp(38px, 6vw, 68px);
+      line-height: 1.05;
+      margin: 16px 0;
+      letter-spacing: -.05em;
+    }
+    .archive-heading p {
+      color: #b8b8bd;
+      line-height: 1.7;
+      max-width: 560px;
+    }
+    .archive-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 28px 0;
+    }
+    .archive-filter {
+      border: 1px solid #45454b;
+      background: transparent;
+      color: inherit;
+      padding: 10px 16px;
+      border-radius: 3px;
+      cursor: pointer;
+      font: inherit;
+    }
+    .archive-filter.active,
+    .archive-filter:hover {
+      background: #fff;
+      color: #090909;
+      border-color: #fff;
+    }
+    .archive-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+    .archive-card {
+      border: 1px solid #333338;
+      background: #111114;
+      color: inherit;
+      text-decoration: none;
+      overflow: hidden;
+      transition: transform .2s, border-color .2s;
+    }
+    .archive-card:hover {
+      transform: translateY(-3px);
+      border-color: #888;
+    }
+    .archive-cover {
+      aspect-ratio: 16 / 9;
+      background: #202024;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .archive-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .archive-cover-placeholder {
+      color: #fff;
+      font-size: 30px;
+      letter-spacing: .15em;
+    }
+    .archive-card-content { padding: 18px; }
+    .archive-category {
+      color: #aaaab0;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .archive-card h2 { font-size: 20px; margin: 10px 0; }
+    .archive-card p {
+      color: #b8b8bd;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .archive-empty {
+      padding: 50px 24px;
+      border: 1px solid #333338;
+      text-align: center;
+      color: #b8b8bd;
+      line-height: 1.7;
+    }
+    .archive-empty strong {
+      display: block;
+      color: #fff;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+    .archive-back { color: inherit; text-decoration: none; }
+    @media (max-width: 760px) {
+      .archive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .archive-heading { align-items: start; flex-direction: column; }
+    }
+    @media (max-width: 500px) {
+      .archive-grid { grid-template-columns: 1fr; }
+      .archive-page { padding-top: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="MOVIQ TV — главная">
+      <img src="moviq-logo.svg" alt="" class="brand-logo">
+      <span class="brand-wordmark">MOVIQ <b>TV</b><small>ТВОЙ КАНАЛ. ТВОЁ ВРЕМЯ.</small></span>
+    </a>
+    <a class="nav-contact" href="index.html#live">Прямой эфир ↗</a>
+  </header>
+
+  <main class="archive-page">
+    <a class="archive-back" href="index.html">← На главную</a>
+    <div class="archive-heading">
+      <div>
+        <div class="eyebrow">MOVIQ TV · ВИДЕОАРХИВ</div>
+        <h1>Видео <span>MOVIQ TV</span></h1>
+        <p>Передачи, записи эфиров и специальные выпуски канала — в одном месте.</p>
+      </div>
+    </div>
+
+    <div class="archive-filters" aria-label="Категории видео">
+      <button class="archive-filter active" data-category="all">Все видео</button>
+      <button class="archive-filter" data-category="programs">Передачи</button>
+      <button class="archive-filter" data-category="broadcasts">Записи эфиров</button>
+      <button class="archive-filter" data-category="specials">Специальные выпуски</button>
+    </div>
+
+    <div id="archive-grid" class="archive-grid"></div>
+    <div id="archive-empty" class="archive-empty" hidden>
+      <strong>Видео скоро появятся</strong>
+      Мы готовим архив MOVIQ TV. Загляни позже, чтобы посмотреть выпуски.
+    </div>
+  </main>
+
+  <script>
+    const grid = document.getElementById('archive-grid');
+    const empty = document.getElementById('archive-empty');
+    const filterButtons = [...document.querySelectorAll('.archive-filter')];
+    let videos = [];
+    let selectedCategory = 'all';
+
+    const categoryNames = {
+      programs: 'Передачи',
+      broadcasts: 'Записи эфиров',
+      specials: 'Специальные выпуски'
+    };
+
+    function renderVideos() {
+      const filtered = videos.filter(video =>
+        video.published === true &&
+        (selectedCategory === 'all' || video.category === selectedCategory)
+      );
+
+      grid.replaceChildren();
+      empty.hidden = filtered.length > 0;
+
+      filtered.forEach(video => {
+        const card = document.createElement('a');
+        card.className = 'archive-card';
+        card.href = 'video.html?id=' + encodeURIComponent(video.id);
+
+        const cover = document.createElement('div');
+        cover.className = 'archive-cover';
+
+        if (video.cover) {
+          const img = document.createElement('img');
+          img.src = video.cover;
+          img.alt = '';
+          img.loading = 'lazy';
+          img.onerror = () => {
+            cover.replaceChildren();
+            const placeholder = document.createElement('span');
+            placeholder.className = 'archive-cover-placeholder';
+            placeholder.textContent = 'MOVIQ TV';
+            cover.append(placeholder);
+          };
+          cover.append(img);
+        } else {
+          const placeholder = document.createElement('span');
+          placeholder.className = 'archive-cover-placeholder';
+          placeholder.textContent = 'MOVIQ TV';
+          cover.append(placeholder);
+        }
+
+        const content = document.createElement('div');
+        content.className = 'archive-card-content';
+
+        const category = document.createElement('div');
+        category.className = 'archive-category';
+        category.textContent = categoryNames[video.category] || 'Видео';
+
+        const title = document.createElement('h2');
+        title.textContent = video.title;
+
+        const description = document.createElement('p');
+        description.textContent = video.description || '';
+
+        content.append(category, title, description);
+        card.append(cover, content);
+        grid.append(card);
+      });
+    }
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        selectedCategory = button.dataset.category;
+        filterButtons.forEach(item =>
+          item.classList.toggle('active', item === button)
+        );
+        renderVideos();
+      });
+    });
+
+    fetch('videos.json')
+      .then(response => {
+        if (!response.ok) throw new Error('Не удалось загрузить каталог');
+        return response.json();
+      })
+      .then(data => {
+        videos = Array.isArray(data.videos) ? data.videos : [];
+        renderVideos();
+      })
+      .catch(() => {
+        grid.replaceChildren();
+        empty.hidden = false;
+      });
+  </script>
+</body>
+</html>
