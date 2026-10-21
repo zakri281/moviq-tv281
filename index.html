@@ -144,5 +144,103 @@
   ↑
 </button>
   <script src="script.js"></script>
+  
+<script>
+(async function () {
+  const currentEl = document.getElementById("schedule-current");
+  const nextEl = document.getElementById("schedule-next");
+  const todayEl = document.getElementById("schedule-today");
+
+  if (!currentEl || !nextEl || !todayEl) return;
+
+  const timeZone = "Europe/Moscow";
+
+  function getMoscowTime() {
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(new Date());
+
+    const hour = Number(parts.find(p => p.type === "hour").value);
+    const minute = Number(parts.find(p => p.type === "minute").value);
+
+    return hour * 60 + minute;
+  }
+
+  function formatTime(minutes) {
+    const hour = String(Math.floor(minutes / 60)).padStart(2, "0");
+    const minute = String(minutes % 60).padStart(2, "0");
+    return `${hour}:${minute}`;
+  }
+
+  try {
+    const response = await fetch("schedule.json?update=" + Date.now());
+    if (!response.ok) throw new Error("Не удалось загрузить расписание");
+
+    const data = await response.json();
+
+    const entries = data.schedule
+      .map(item => {
+        const [hour, minute] = item.time.split(":").map(Number);
+        return {
+          time: hour * 60 + minute,
+          title: item.title
+        };
+      })
+      .filter(item => item.time >= 0 && item.time < 1440)
+      .sort((a, b) => a.time - b.time);
+
+    if (!entries.length) throw new Error("Расписание пустое");
+
+    function updateSchedule() {
+      const now = getMoscowTime();
+
+      let currentIndex = -1;
+
+      for (let i = 0; i < entries.length; i++) {
+        if (entries[i].time <= now) currentIndex = i;
+        else break;
+      }
+
+      const current = currentIndex >= 0 ? entries[currentIndex] : null;
+      const next = entries.find(item => item.time > now);
+
+      currentEl.textContent = current
+        ? `${formatTime(current.time)} — ${current.title}`
+        : "Сегодняшний эфир скоро начнётся";
+
+      nextEl.textContent = next
+        ? `${formatTime(next.time)} — ${next.title}`
+        : "Расписание на сегодня завершено";
+
+      todayEl.replaceChildren();
+
+      entries.forEach((item, index) => {
+        const row = document.createElement("p");
+        row.style.margin = "8px 0";
+        row.textContent = `${formatTime(item.time)} — ${item.title}`;
+
+        if (currentIndex === index) {
+          row.style.fontWeight = "700";
+          row.setAttribute("aria-current", "true");
+        }
+
+        todayEl.appendChild(row);
+      });
+    }
+
+    updateSchedule();
+    setInterval(updateSchedule, 15000);
+  } catch (error) {
+    currentEl.textContent = "Расписание временно недоступно";
+    nextEl.textContent = "Попробуйте обновить страницу";
+    todayEl.textContent = "Не удалось загрузить программу на сегодня";
+    console.error(error);
+  }
+})();
+</script>
+
 </body>
 </html>
