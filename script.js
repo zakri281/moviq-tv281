@@ -42,3 +42,13 @@ if (menuToggle && nav) {
   }));
 }
 document.getElementById("year").textContent = new Date().getFullYear();
+const backTopButton = document.getElementById('floating-back-top');
+
+if (backTopButton) {
+  backTopButton.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+}
