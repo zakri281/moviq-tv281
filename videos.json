@@ -1,4 +1,16 @@
 
 {
-  "videos": []
+  "videos": [
+    {
+      "id": "vypusk-1",
+      "title": "Первый выпуск MOVIQ TV",
+      "description": "Смотрите выпуск на MOVIQ TV.",
+      "category": "programs",
+      "date": "2026-10-21",
+      "published": true,
+      "vkUrl": "https://vkvideo.ru/video-231787809_456239146",
+      "embedUrl": "https://vkvideo.ru/video_ext.php?oid=-231787809&id=456239146&hash=e1bb38a043dea0e9&hd=3",
+      "thumbnail": ""
+    }
+  ]
 }
