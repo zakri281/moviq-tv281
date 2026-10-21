@@ -1,0 +1,232 @@
+
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090a0a">
+  <meta name="description" content="Видеоархив MOVIQ TV — смотри выпуски канала.">
+  <title>Видео — MOVIQ TV</title>
+  <link rel="icon" type="image/svg+xml" href="moviq-logo.svg">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .video-page {
+      width: min(1100px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 42px 0 90px;
+    }
+    .video-back {
+      display: inline-block;
+      margin-bottom: 28px;
+      color: #c3c3c8;
+      text-decoration: none;
+    }
+    .video-back:hover { color: #fff; }
+    .video-heading { margin-bottom: 24px; }
+    .video-category {
+      color: #aaaab0;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .video-heading h1 {
+      font-size: clamp(30px, 5vw, 56px);
+      line-height: 1.1;
+      letter-spacing: -.045em;
+      margin: 12px 0;
+    }
+    .video-meta {
+      color: #aaaab0;
+      font-size: 13px;
+    }
+    .video-player {
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border: 1px solid #45454b;
+      overflow: hidden;
+    }
+    .video-player iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .video-description {
+      max-width: 760px;
+      color: #c3c3c8;
+      line-height: 1.8;
+      margin-top: 24px;
+      white-space: pre-line;
+    }
+    .video-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+    .video-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 18px;
+      border: 1px solid #55555c;
+      color: #fff;
+      text-decoration: none;
+      background: #111114;
+    }
+    .video-button.primary {
+      background: #fff;
+      color: #090909;
+      border-color: #fff;
+    }
+    .video-message {
+      padding: 40px 24px;
+      border: 1px solid #333338;
+      color: #b8b8bd;
+      line-height: 1.7;
+    }
+    .video-message h1 { color: #fff; }
+    @media (max-width: 600px) {
+      .video-page { padding-top: 28px; }
+      .video-actions { flex-direction: column; }
+      .video-button { width: 100%; box-sizing: border-box; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="MOVIQ TV — главная">
+      <img src="moviq-logo.svg" alt="" class="brand-logo">
+      <span class="brand-wordmark">MOVIQ <b>TV</b><small>ТВОЙ КАНАЛ. ТВОЁ ВРЕМЯ.</small></span>
+    </a>
+    <a class="nav-contact" href="index.html#live">Прямой эфир ↗</a>
+  </header>
+
+  <main class="video-page">
+    <a class="video-back" href="videos.html">← Назад в видеоархив</a>
+    <div id="video-content">
+      <div class="video-message">
+        <h1>Загружаем выпуск…</h1>
+        Подожди немного.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const content = document.getElementById('video-content');
+    const categoryNames = {
+      programs: 'Передачи',
+      broadcasts: 'Записи эфиров',
+      specials: 'Специальные выпуски'
+    };
+
+    function showMessage(title, message) {
+      content.replaceChildren();
+      const box = document.createElement('div');
+      box.className = 'video-message';
+      const heading = document.createElement('h1');
+      heading.textContent = title;
+      const paragraph = document.createElement('p');
+      paragraph.textContent = message;
+      box.append(heading, paragraph);
+      content.append(box);
+    }
+
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(value);
+        return ['https:', 'http:'].includes(url.protocol) ? url.href : '';
+      } catch {
+        return '';
+      }
+    }
+
+    function addText(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      element.textContent = text || '';
+      return element;
+    }
+
+    async function loadVideo() {
+      const id = new URLSearchParams(window.location.search).get('id');
+      if (!id) {
+        showMessage('Выпуск не указан', 'Вернись в видеоархив и выбери видео.');
+        return;
+      }
+
+      try {
+        const response = await fetch('videos.json');
+        if (!response.ok) throw new Error('catalog');
+        const data = await response.json();
+        const video = (Array.isArray(data.videos) ? data.videos : [])
+          .find(item => item.id === id && item.published === true);
+
+        if (!video) {
+          showMessage('Видео пока недоступно', 'Возможно, выпуск ещё не опубликован или ссылка устарела.');
+          return;
+        }
+
+        document.title = video.title + ' — MOVIQ TV';
+        content.replaceChildren();
+
+        const heading = document.createElement('div');
+        heading.className = 'video-heading';
+        heading.append(
+          addText('div', 'video-category', categoryNames[video.category] || 'Видео'),
+          addText('h1', '', video.title),
+          addText('div', 'video-meta', video.date || 'MOVIQ TV')
+        );
+        content.append(heading);
+
+        const embedUrl = safeHttpUrl(video.embedUrl);
+        const vkUrl = safeHttpUrl(video.vkUrl);
+
+        if (embedUrl) {
+          const player = document.createElement('div');
+          player.className = 'video-player';
+          const iframe = document.createElement('iframe');
+          iframe.src = embedUrl;
+          iframe.title = video.title;
+          iframe.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock';
+          iframe.allowFullscreen = true;
+          iframe.loading = 'lazy';
+          player.append(iframe);
+          content.append(player);
+        } else {
+          showMessage('Плеер пока не настроен', 'Для этого выпуска ещё не добавлена проверенная ссылка для встраивания.');
+        }
+
+        if (video.description) {
+          content.append(addText('p', 'video-description', video.description));
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'video-actions';
+
+        if (vkUrl) {
+          const link = document.createElement('a');
+          link.className = 'video-button primary';
+          link.href = vkUrl;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = 'Открыть на VK Видео ↗';
+          actions.append(link);
+        }
+
+        const archive = document.createElement('a');
+        archive.className = 'video-button';
+        archive.href = 'videos.html';
+        archive.textContent = 'Весь видеоархив';
+        actions.append(archive);
+        content.append(actions);
+      } catch {
+        showMessage('Не удалось загрузить видео', 'Проверь, что файл videos.json опубликован и доступен.');
+      }
+    }
+
+    loadVideo();
+  </script>
+</body>
+</html>
