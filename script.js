@@ -3,7 +3,7 @@ const STREAM_PAGE_URL = "https://vkvideo.ru/live-231787809_456239198";
 
 // Вставь сюда именно URL iframe из меню VK «Поделиться» → «Код для вставки».
 // Не вставляй сюда ссылку на страницу трансляции, если VK выдал отдельный embed URL.
-const VK_EMBED_URL = ""; // Пример формата зависит от типа трансляции VK.
+const VK_EMBED_URL = "https://vkvideo.ru/video_ext.php?oid=-231787809&id=456239198&hash=dbb840e4cc4c91f9&hd=3"; ""; // Пример формата зависит от типа трансляции VK.
 
 const loadButton = document.getElementById("load-player");
 const playerFrame = document.getElementById("player-frame");
