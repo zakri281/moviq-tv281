@@ -62,3 +62,89 @@ h1 span, h2 span, .about-copy h2 span, .contact-copy h2 span {
 .news-visual {
   background: radial-gradient(ellipse at center,#292a30,#111216 65%) !important;
 }
+
+/* MOVIQ TV — premium black & white */
+.hero {
+  grid-template-columns: 1fr;
+  padding-top: 90px;
+  padding-bottom: 90px;
+}
+
+.hero-copy {
+  max-width: 850px;
+}
+
+.hero-art {
+  display: none;
+}
+
+.hero h1 {
+  font-size: clamp(54px, 8vw, 100px);
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+}
+
+.hero-description {
+  max-width: 540px;
+  font-size: 17px;
+  line-height: 1.8;
+  color: #b8b8bd;
+}
+
+.hero .eyebrow {
+  letter-spacing: 0.18em;
+}
+
+.button-primary {
+  border-radius: 3px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.player-shell {
+  border: 1px solid #45454b;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #000;
+}
+
+.player-topbar {
+  background: #0b0b0d;
+  border-bottom: 1px solid #303035;
+}
+
+.player-frame {
+  background: #000 !important;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.player-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.player-footer {
+  border-top: 1px solid #303035;
+}
+
+.live-label {
+  border-radius: 3px;
+}
+
+@media (max-width: 700px) {
+  .hero {
+    padding-top: 60px;
+    padding-bottom: 55px;
+  }
+
+  .hero h1 {
+    font-size: clamp(46px, 12vw, 68px);
+  }
+
+  .hero-description {
+    font-size: 15px;
+  }
+}
