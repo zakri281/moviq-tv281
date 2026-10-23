@@ -410,6 +410,7 @@
       })
       .then(data => {
         videos = Array.isArray(data.videos) ? data.videos : [];
+        console.log('MOVIRAQ: загружено видео:', videos.length, videos);
 
         if (requestedCategory === 'programs') selectedCategory = 'programs';
 
