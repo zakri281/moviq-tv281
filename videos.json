@@ -22,6 +22,28 @@
       "vkUrl": "https://vkvideo.ru/video-231787809_456239180",
       "embedUrl": "https://vkvideo.ru/video_ext.php?oid=-231787809&id=456239180&hash=d4000e2bdde12d02&hd=4",
       "thumbnail": ""
+    },
+    {
+      "id": "fall2deadpoint",
+      "title": "Вышка 2: Мёртвая точка, фильм 2026",
+      "description": "Смотрите видео на MOVIQ TV.",
+      "category": "programs",
+      "date": "2026-10-22",
+      "published": true,
+      "vkUrl": "https://vkvideo.ru/video-231787809_456239199",
+      "embedUrl": "https://vkvideo.ru/video_ext.php?oid=-231787809&id=456239199&hash=83296744bbc2554d&hd=2",
+      "thumbnail": ""
+    },
+    {
+      "id": "cheburashka2",
+      "title": "Чебурашка 2, фильм 2026",
+      "description": "Смотрите видео на MOVIQ TV.",
+      "category": "programs",
+      "date": "2026-10-23",
+      "published": true,
+      "vkUrl": "https://live.vkvideo.ru/channel35765741/record/fd81b013-0506-4d5e-be35-2edab9085011?tab=video",
+      "embedUrl": "https://live.vkvideo.ru/app/embed/channel35765741/fd81b013-0506-4d5e-be35-2edab9085011",
+      "thumbnail": ""
     }
   ]
 }
