@@ -4,117 +4,232 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090a0a">
-  <meta name="description" content="Видеоархив MOVIQ TV — смотри выпуски канала.">
-  <title>Видео — MOVIQ TV</title>
-  <link rel="icon" type="image/svg+xml" href="moviq-logo.svg">
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="MOVIRAQ — онлайн-кинотеатр. Смотри фильмы, мультфильмы и передачи.">
+  <title>MOVIRAQ — просмотр видео</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    :root {
+      --red: #e50914;
+      --bg: #080808;
+      --panel: #151515;
+      --border: #303030;
+      --muted: #b5b5b5;
+    }
+
+    body {
+      background: var(--bg);
+      color: #fff;
+    }
+
+    .mq-header {
+      min-height: 76px;
+      padding: 14px max(24px, calc((100% - 1100px) / 2));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid var(--border);
+      background: #080808;
+    }
+
+    .mq-logo {
+      color: var(--red);
+      text-decoration: none;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -.06em;
+    }
+
+    .mq-logo small {
+      display: block;
+      color: #aaa;
+      font-size: 9px;
+      letter-spacing: .2em;
+      font-weight: 600;
+    }
+
+    .mq-header-link {
+      color: #fff;
+      text-decoration: none;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+
+    .mq-header-link:hover {
+      border-color: var(--red);
+      color: #ff4a53;
+    }
+
     .video-page {
       width: min(1100px, calc(100% - 40px));
       margin: 0 auto;
-      padding: 42px 0 90px;
+      padding: 36px 0 90px;
     }
+
     .video-back {
       display: inline-block;
       margin-bottom: 28px;
-      color: #c3c3c8;
+      color: #ccc;
       text-decoration: none;
     }
-    .video-back:hover { color: #fff; }
-    .video-heading { margin-bottom: 24px; }
+
+    .video-back:hover {
+      color: #ff4a53;
+    }
+
+    .video-heading {
+      margin-bottom: 24px;
+    }
+
     .video-category {
-      color: #aaaab0;
+      color: #ff4a53;
       font-size: 11px;
+      font-weight: 700;
       letter-spacing: .14em;
       text-transform: uppercase;
     }
+
     .video-heading h1 {
       font-size: clamp(30px, 5vw, 56px);
       line-height: 1.1;
       letter-spacing: -.045em;
       margin: 12px 0;
     }
+
     .video-meta {
-      color: #aaaab0;
+      color: var(--muted);
       font-size: 13px;
     }
+
     .video-player {
       aspect-ratio: 16 / 9;
       background: #000;
-      border: 1px solid #45454b;
+      border: 1px solid #492126;
       overflow: hidden;
+      border-radius: 4px;
     }
+
     .video-player iframe {
       display: block;
       width: 100%;
       height: 100%;
       border: 0;
     }
+
     .video-description {
       max-width: 760px;
-      color: #c3c3c8;
+      color: #ccc;
       line-height: 1.8;
       margin-top: 24px;
       white-space: pre-line;
     }
+
     .video-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       margin-top: 26px;
     }
+
     .video-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       padding: 13px 18px;
-      border: 1px solid #55555c;
+      border: 1px solid #555;
+      border-radius: 4px;
       color: #fff;
       text-decoration: none;
-      background: #111114;
+      background: #151515;
     }
+
+    .video-button:hover {
+      border-color: var(--red);
+    }
+
     .video-button.primary {
-      background: #fff;
-      color: #090909;
-      border-color: #fff;
+      background: var(--red);
+      color: #fff;
+      border-color: var(--red);
     }
+
     .video-message {
       padding: 40px 24px;
-      border: 1px solid #333338;
-      color: #b8b8bd;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
       line-height: 1.7;
     }
-    .video-message h1 { color: #fff; }
+
+    .video-message h1 {
+      color: #fff;
+    }
+
+    .mq-footer {
+      border-top: 1px solid var(--border);
+      padding: 25px 20px;
+      text-align: center;
+      color: #999;
+      font-size: 13px;
+    }
+
+    .mq-footer a {
+      color: #fff;
+      text-decoration: none;
+    }
+
     @media (max-width: 600px) {
-      .video-page { padding-top: 28px; }
-      .video-actions { flex-direction: column; }
-      .video-button { width: 100%; box-sizing: border-box; }
+      .mq-header {
+        padding: 16px 20px;
+      }
+
+      .video-page {
+        padding-top: 28px;
+      }
+
+      .video-actions {
+        flex-direction: column;
+      }
+
+      .video-button {
+        width: 100%;
+        box-sizing: border-box;
+      }
     }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="index.html" aria-label="MOVIQ TV — главная">
-      <img src="moviq-logo.svg" alt="" class="brand-logo">
-      <span class="brand-wordmark">MOVIQ <b>TV</b><small>ТВОЙ КАНАЛ. ТВОЁ ВРЕМЯ.</small></span>
+  <header class="mq-header">
+    <a class="mq-logo" href="videos.html">
+      MOVIRAQ
+      <small>ОНЛАЙН-КИНОТЕАТР</small>
     </a>
-    <a class="nav-contact" href="index.html#live">Прямой эфир ↗</a>
+    <a class="mq-header-link" href="index.html">← MOVIQ TV</a>
   </header>
 
   <main class="video-page">
-    <a class="video-back" href="videos.html">← Назад в видеоархив</a>
+    <a class="video-back" href="videos.html">← Назад в MOVIRAQ</a>
+
     <div id="video-content">
       <div class="video-message">
-        <h1>Загружаем выпуск…</h1>
+        <h1>Загружаем видео…</h1>
         Подожди немного.
       </div>
     </div>
   </main>
 
+  <footer class="mq-footer">
+    <a href="videos.html">← Весь каталог MOVIRAQ</a>
+    <p>© MOVIRAQ · Онлайн-кинотеатр</p>
+  </footer>
+
   <script>
     const content = document.getElementById('video-content');
+
     const categoryNames = {
       programs: 'Передачи',
       broadcasts: 'Записи эфиров',
@@ -123,12 +238,16 @@
 
     function showMessage(title, message) {
       content.replaceChildren();
+
       const box = document.createElement('div');
       box.className = 'video-message';
+
       const heading = document.createElement('h1');
       heading.textContent = title;
+
       const paragraph = document.createElement('p');
       paragraph.textContent = message;
+
       box.append(heading, paragraph);
       content.append(box);
     }
@@ -151,14 +270,17 @@
 
     async function loadVideo() {
       const id = new URLSearchParams(window.location.search).get('id');
+
       if (!id) {
-        showMessage('Выпуск не указан', 'Вернись в видеоархив и выбери видео.');
+        showMessage('Выпуск не указан', 'Вернись в каталог MOVIRAQ и выбери видео.');
         return;
       }
 
       try {
         const response = await fetch('videos.json');
+
         if (!response.ok) throw new Error('catalog');
+
         const data = await response.json();
         const video = (Array.isArray(data.videos) ? data.videos : [])
           .find(item => item.id === id && item.published === true);
@@ -168,16 +290,18 @@
           return;
         }
 
-        document.title = video.title + ' — MOVIQ TV';
+        document.title = video.title + ' — MOVIRAQ';
         content.replaceChildren();
 
         const heading = document.createElement('div');
         heading.className = 'video-heading';
+
         heading.append(
           addText('div', 'video-category', categoryNames[video.category] || 'Видео'),
           addText('h1', '', video.title),
-          addText('div', 'video-meta', video.date || 'MOVIQ TV')
+          addText('div', 'video-meta', video.date || 'MOVIRAQ')
         );
+
         content.append(heading);
 
         const embedUrl = safeHttpUrl(video.embedUrl);
@@ -186,16 +310,24 @@
         if (embedUrl) {
           const player = document.createElement('div');
           player.className = 'video-player';
+
           const iframe = document.createElement('iframe');
           iframe.src = embedUrl;
           iframe.title = video.title;
           iframe.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock';
           iframe.allowFullscreen = true;
           iframe.loading = 'lazy';
+
           player.append(iframe);
           content.append(player);
         } else {
-          showMessage('Плеер пока не настроен', 'Для этого выпуска ещё не добавлена проверенная ссылка для встраивания.');
+          const message = document.createElement('div');
+          message.className = 'video-message';
+          message.append(
+            addText('h1', '', 'Плеер пока не настроен'),
+            addText('p', '', 'Для этого выпуска ещё не добавлена ссылка для встраивания.')
+          );
+          content.append(message);
         }
 
         if (video.description) {
@@ -218,7 +350,8 @@
         const archive = document.createElement('a');
         archive.className = 'video-button';
         archive.href = 'videos.html';
-        archive.textContent = 'Весь видеоархив';
+        archive.textContent = 'Весь каталог MOVIRAQ';
+
         actions.append(archive);
         content.append(actions);
       } catch {
