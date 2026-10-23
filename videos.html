@@ -4,145 +4,302 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090a0a">
-  <meta name="description" content="Видеоархив MOVIQ TV — передачи и записи эфиров.">
-  <title>Видеоархив — MOVIQ TV</title>
-  <link rel="icon" type="image/svg+xml" href="moviq-logo.svg">
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="MOVIRAQ — онлайн-кинотеатр: фильмы, мультфильмы и передачи.">
+  <title>MOVIRAQ — онлайн-кинотеатр</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    :root {
+      --mq-red: #e50914;
+      --mq-bg: #080808;
+      --mq-panel: #151515;
+      --mq-border: #303030;
+      --mq-muted: #b5b5b5;
+    }
+
+    body {
+      background: var(--mq-bg);
+      color: #fff;
+    }
+
+    .mq-header {
+      min-height: 76px;
+      padding: 14px max(24px, calc((100% - 1180px) / 2));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid var(--mq-border);
+      background: #080808;
+    }
+
+    .mq-logo {
+      color: var(--mq-red);
+      text-decoration: none;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -.06em;
+    }
+
+    .mq-logo small {
+      display: block;
+      color: #aaa;
+      font-size: 9px;
+      letter-spacing: .2em;
+      font-weight: 600;
+    }
+
+    .mq-nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .mq-nav a {
+      color: #eee;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .mq-nav a:hover,
+    .mq-nav a.active {
+      color: var(--mq-red);
+    }
+
+    .mq-nav .mq-return {
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 10px 13px;
+    }
+
     .archive-page {
       width: min(1180px, calc(100% - 40px));
       margin: 0 auto;
-      padding: 64px 0 100px;
+      padding: 54px 0 100px;
     }
-    .archive-heading {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 24px;
-      margin-bottom: 32px;
+
+    .mq-hero {
+      padding: 38px 0 28px;
     }
-    .archive-heading h1 {
-      font-size: clamp(38px, 6vw, 68px);
-      line-height: 1.05;
+
+    .mq-eyebrow {
+      color: var(--mq-red);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .18em;
+    }
+
+    .mq-hero h1 {
+      font-size: clamp(38px, 7vw, 76px);
+      line-height: 1;
+      letter-spacing: -.055em;
       margin: 16px 0;
-      letter-spacing: -.05em;
     }
-    .archive-heading p {
-      color: #b8b8bd;
+
+    .mq-hero p {
+      max-width: 600px;
+      color: var(--mq-muted);
       line-height: 1.7;
-      max-width: 560px;
     }
+
+    .mq-featured {
+      margin: 20px 0 36px;
+      padding: 26px;
+      background: linear-gradient(110deg, #251012, #111 65%);
+      border: 1px solid #492126;
+      border-left: 4px solid var(--mq-red);
+      border-radius: 5px;
+    }
+
+    .mq-featured strong {
+      display: block;
+      font-size: clamp(22px, 4vw, 34px);
+      margin: 8px 0;
+    }
+
+    .mq-featured span {
+      color: #ccc;
+      font-size: 14px;
+    }
+
     .archive-filters {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin: 28px 0;
     }
+
     .archive-filter {
-      border: 1px solid #45454b;
-      background: transparent;
-      color: inherit;
+      border: 1px solid #444;
+      background: #151515;
+      color: #eee;
       padding: 10px 16px;
-      border-radius: 3px;
+      border-radius: 4px;
       cursor: pointer;
       font: inherit;
     }
+
     .archive-filter.active,
     .archive-filter:hover {
-      background: #fff;
-      color: #090909;
-      border-color: #fff;
+      background: var(--mq-red);
+      color: #fff;
+      border-color: var(--mq-red);
     }
+
     .archive-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 22px;
     }
+
     .archive-card {
-      border: 1px solid #333338;
-      background: #111114;
+      display: block;
+      border: 1px solid var(--mq-border);
+      background: var(--mq-panel);
       color: inherit;
       text-decoration: none;
       overflow: hidden;
+      border-radius: 5px;
       transition: transform .2s, border-color .2s;
     }
+
     .archive-card:hover {
       transform: translateY(-3px);
-      border-color: #888;
+      border-color: var(--mq-red);
     }
+
     .archive-cover {
       aspect-ratio: 16 / 9;
-      background: #202024;
+      background: #1b1b1b;
       display: grid;
       place-items: center;
       overflow: hidden;
     }
+
     .archive-cover img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
     .archive-cover-placeholder {
-      color: #fff;
-      font-size: 30px;
-      letter-spacing: .15em;
+      color: var(--mq-red);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: .08em;
     }
-    .archive-card-content { padding: 18px; }
+
+    .archive-card-content {
+      padding: 18px;
+    }
+
     .archive-category {
-      color: #aaaab0;
+      color: #ff4a53;
       font-size: 11px;
       letter-spacing: .12em;
       text-transform: uppercase;
     }
-    .archive-card h2 { font-size: 20px; margin: 10px 0; }
+
+    .archive-card h2 {
+      font-size: 19px;
+      line-height: 1.35;
+      margin: 10px 0;
+    }
+
     .archive-card p {
-      color: #b8b8bd;
+      color: var(--mq-muted);
       font-size: 14px;
       line-height: 1.6;
     }
+
     .archive-empty {
       padding: 50px 24px;
-      border: 1px solid #333338;
+      border: 1px solid var(--mq-border);
       text-align: center;
-      color: #b8b8bd;
+      color: var(--mq-muted);
       line-height: 1.7;
     }
+
     .archive-empty strong {
       display: block;
       color: #fff;
       font-size: 22px;
       margin-bottom: 8px;
     }
-    .archive-back { color: inherit; text-decoration: none; }
-    @media (max-width: 760px) {
-      .archive-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .archive-heading { align-items: start; flex-direction: column; }
+
+    .mq-footer {
+      border-top: 1px solid var(--mq-border);
+      padding: 25px 20px;
+      text-align: center;
+      color: #999;
+      font-size: 13px;
     }
+
+    .mq-footer a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    @media (max-width: 760px) {
+      .mq-header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 18px 20px;
+      }
+
+      .mq-nav {
+        gap: 14px;
+      }
+
+      .archive-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .mq-featured {
+        padding: 20px;
+      }
+    }
+
     @media (max-width: 500px) {
-      .archive-grid { grid-template-columns: 1fr; }
-      .archive-page { padding-top: 40px; }
+      .archive-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .archive-page {
+        padding-top: 30px;
+      }
     }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="index.html" aria-label="MOVIQ TV — главная">
-      <img src="moviq-logo.svg" alt="" class="brand-logo">
-      <span class="brand-wordmark">MOVIQ <b>TV</b><small>ТВОЙ КАНАЛ. ТВОЁ ВРЕМЯ.</small></span>
+  <header class="mq-header">
+    <a class="mq-logo" href="videos.html">
+      MOVIRAQ
+      <small>ОНЛАЙН-КИНОТЕАТР</small>
     </a>
-    <a class="nav-contact" href="index.html#live">Прямой эфир ↗</a>
+
+    <nav class="mq-nav" aria-label="Меню MOVIRAQ">
+      <a class="active" href="videos.html">Главная</a>
+      <a href="videos.html?category=films">Фильмы</a>
+      <a href="videos.html?category=cartoons">Мультфильмы</a>
+      <a href="videos.html?category=programs">Передачи</a>
+      <a class="mq-return" href="index.html">← MOVIQ TV</a>
+    </nav>
   </header>
 
   <main class="archive-page">
-    <a class="archive-back" href="index.html">← На главную</a>
-    <div class="archive-heading">
-      <div>
-        <div class="eyebrow">MOVIQ TV · ВИДЕОАРХИВ</div>
-        <h1>Видео <span>MOVIQ TV</span></h1>
-        <p>Передачи, записи эфиров и специальные выпуски канала — в одном месте.</p>
-      </div>
-    </div>
+    <section class="mq-hero">
+      <div class="mq-eyebrow">ТВОЙ ОНЛАЙН-КИНОТЕАТР</div>
+      <h1>Твой вечер.<br><span style="color:#e50914">Твой выбор.</span></h1>
+      <p>Фильмы, мультфильмы и передачи в одном месте. Выбирай видео и смотри прямо на MOVIRAQ.</p>
+    </section>
+
+    <section class="mq-featured">
+      <div class="mq-eyebrow">КАТАЛОГ MOVIRAQ</div>
+      <strong>Что будем смотреть?</strong>
+      <span>Выбери видео из каталога ниже.</span>
+    </section>
 
     <div class="archive-filters" aria-label="Категории видео">
       <button class="archive-filter active" data-category="all">Все видео</button>
@@ -152,11 +309,17 @@
     </div>
 
     <div id="archive-grid" class="archive-grid"></div>
+
     <div id="archive-empty" class="archive-empty" hidden>
       <strong>Видео скоро появятся</strong>
-      Мы готовим архив MOVIQ TV. Загляни позже, чтобы посмотреть выпуски.
+      Каталог MOVIRAQ скоро пополнится новыми выпусками.
     </div>
   </main>
+
+  <footer class="mq-footer">
+    <a href="index.html">← Вернуться на MOVIQ TV</a>
+    <p>© MOVIRAQ · Онлайн-кинотеатр</p>
+  </footer>
 
   <script>
     const grid = document.getElementById('archive-grid');
@@ -188,23 +351,23 @@
         const cover = document.createElement('div');
         cover.className = 'archive-cover';
 
-        if (video.cover) {
+        if (video.cover || video.thumbnail) {
           const img = document.createElement('img');
-          img.src = video.cover;
+          img.src = video.cover || video.thumbnail;
           img.alt = '';
           img.loading = 'lazy';
           img.onerror = () => {
             cover.replaceChildren();
             const placeholder = document.createElement('span');
             placeholder.className = 'archive-cover-placeholder';
-            placeholder.textContent = 'MOVIQ TV';
+            placeholder.textContent = 'MOVIRAQ';
             cover.append(placeholder);
           };
           cover.append(img);
         } else {
           const placeholder = document.createElement('span');
           placeholder.className = 'archive-cover-placeholder';
-          placeholder.textContent = 'MOVIQ TV';
+          placeholder.textContent = 'MOVIRAQ';
           cover.append(placeholder);
         }
 
@@ -237,6 +400,9 @@
       });
     });
 
+    const params = new URLSearchParams(window.location.search);
+    const requestedCategory = params.get('category');
+
     fetch('videos.json')
       .then(response => {
         if (!response.ok) throw new Error('Не удалось загрузить каталог');
@@ -244,6 +410,13 @@
       })
       .then(data => {
         videos = Array.isArray(data.videos) ? data.videos : [];
+
+        if (requestedCategory === 'programs') selectedCategory = 'programs';
+
+        filterButtons.forEach(item =>
+          item.classList.toggle('active', item.dataset.category === selectedCategory)
+        );
+
         renderVideos();
       })
       .catch(() => {
