@@ -44,6 +44,17 @@
       "vkUrl": "https://live.vkvideo.ru/channel35765741/record/fd81b013-0506-4d5e-be35-2edab9085011?tab=video",
       "embedUrl": "https://live.vkvideo.ru/app/embed/channel35765741/fd81b013-0506-4d5e-be35-2edab9085011",
       "thumbnail": ""
+    },
+    {
+      "id": "cheburashka",
+      "title": "Чебурашка, фильм 2023",
+      "description": "Смотрите видео на MOVIQ TV.",
+      "category": "programs",
+      "date": "2026-10-23",
+      "published": true,
+      "vkUrl": "https://live.vkvideo.ru/channel35765741/record/55068256-01a3-44b0-b701-c68d6fdbe372?tab=video",
+      "embedUrl": "https://live.vkvideo.ru/app/embed/channel35765741/55068256-01a3-44b0-b701-c68d6fdbe372",
+      "thumbnail": ""
     }
   ]
 }
