@@ -184,49 +184,53 @@
       player.append(box);
     }
 
-    function playEpisode(episode) {
-      currentEpisode = episode;
-      episodesElement.querySelectorAll('.episode').forEach(button => {
-        button.classList.toggle(
-          'active',
-          Number(button.dataset.number) === Number(episode.number)
-        );
-      });
 
-      if (!episode.embedUrl) {
-        showMessage('Для этой серии пока не добавлена ссылка на плеер.');
-        return;
-      }
+function playEpisode(episode) {
+  currentEpisode = episode;
 
+  episodesElement.querySelectorAll('.episode').forEach(button => {
+    button.classList.toggle(
+      'active',
+      Number(button.dataset.number) === Number(episode.number)
+    );
+  });
 
-if (
-  url.protocol !== 'https:' ||
-  ![
-    'vkvideo.ru',
-    'live.vkvideo.ru',
-    'vk.com',
-    'vk.ru'
-  ].includes(url.hostname)
-) {
-  showMessage('Ссылка на плеер некорректна.');
-  return;
+  if (!episode.embedUrl) {
+    showMessage('Для этой серии пока не добавлена ссылка на плеер.');
+    return;
+  }
+
+  try {
+    const url = new URL(episode.embedUrl);
+
+    if (
+      url.protocol !== 'https:' ||
+      ![
+        'vkvideo.ru',
+        'live.vkvideo.ru',
+        'vk.com',
+        'vk.ru'
+      ].includes(url.hostname)
+    ) {
+      showMessage('Ссылка на плеер некорректна.');
+      return;
+    }
+
+    const iframe = document.createElement('iframe');
+    iframe.src = url.href;
+    iframe.title = episode.title || 'Серия сериала';
+    iframe.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+
+    player.replaceChildren(iframe);
+    statusElement.textContent =
+      'Серия ' + episode.number + ': ' + (episode.title || '');
+  } catch {
+    showMessage('Не удалось прочитать ссылку на плеер.');
+  }
 }
 
-
-        const iframe = document.createElement('iframe');
-        iframe.src = url.href;
-        iframe.title = episode.title || 'Серия сериала';
-        iframe.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
-        iframe.allowFullscreen = true;
-        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-
-        player.replaceChildren(iframe);
-        statusElement.textContent =
-          'Серия ' + episode.number + ': ' + (episode.title || '');
-      } catch {
-        showMessage('Не удалось прочитать ссылку на плеер.');
-      }
-    }
 
     function renderSeason() {
       const season = currentSeries.seasons[currentSeason];
