@@ -302,6 +302,7 @@
     </section>
 
     <div class="archive-filters" aria-label="Категории видео">
+      <button class="archive-filter" data-category="series">Сериалы</button>
       <button class="archive-filter active" data-category="all">Все видео</button>
       <button class="archive-filter" data-category="programs">Передачи</button>
       <button class="archive-filter" data-category="broadcasts">Записи эфиров</button>
@@ -326,6 +327,7 @@
     const empty = document.getElementById('archive-empty');
     const filterButtons = [...document.querySelectorAll('.archive-filter')];
     let videos = [];
+    let series = [];
     let selectedCategory = 'all';
 
     const categoryNames = {
@@ -334,61 +336,81 @@
       specials: 'Специальные выпуски'
     };
 
-    function renderVideos() {
-      const filtered = videos.filter(video =>
-        video.published === true &&
-        (selectedCategory === 'all' || video.category === selectedCategory)
-      );
+   
+function renderVideos() {
+  const movieCards = videos
+    .filter(video =>
+      video.published === true &&
+      (selectedCategory === 'all' || video.category === selectedCategory)
+    )
+    .map(video => ({ ...video, itemType: 'movie' }));
 
-      grid.replaceChildren();
-      empty.hidden = filtered.length > 0;
+  const seriesCards = series
+    .filter(item =>
+      item.published === true &&
+      (selectedCategory === 'all' || selectedCategory === 'series')
+    )
+    .map(item => ({ ...item, itemType: 'series' }));
 
-      filtered.forEach(video => {
-        const card = document.createElement('a');
-        card.className = 'archive-card';
-        card.href = 'video.html?id=' + encodeURIComponent(video.id);
+  const filtered = [...movieCards, ...seriesCards];
 
-        const cover = document.createElement('div');
-        cover.className = 'archive-cover';
+  grid.replaceChildren();
+  empty.hidden = filtered.length > 0;
 
-        if (video.cover || video.thumbnail) {
-          const img = document.createElement('img');
-          img.src = video.cover || video.thumbnail;
-          img.alt = '';
-          img.loading = 'lazy';
-          img.onerror = () => {
-            cover.replaceChildren();
-            const placeholder = document.createElement('span');
-            placeholder.className = 'archive-cover-placeholder';
-            placeholder.textContent = 'MOVIRAQ';
-            cover.append(placeholder);
-          };
-          cover.append(img);
-        } else {
-          const placeholder = document.createElement('span');
-          placeholder.className = 'archive-cover-placeholder';
-          placeholder.textContent = 'MOVIRAQ';
-          cover.append(placeholder);
-        }
+  filtered.forEach(video => {
+    const card = document.createElement('a');
+    card.className = 'archive-card';
 
-        const content = document.createElement('div');
-        content.className = 'archive-card-content';
+    card.href = video.itemType === 'series'
+      ? 'series.html?id=' + encodeURIComponent(video.id)
+      : 'video.html?id=' + encodeURIComponent(video.id);
 
-        const category = document.createElement('div');
-        category.className = 'archive-category';
-        category.textContent = categoryNames[video.category] || 'Видео';
+    const cover = document.createElement('div');
+    cover.className = 'archive-cover';
 
-        const title = document.createElement('h2');
-        title.textContent = video.title;
+    const imageUrl = video.cover || video.thumbnail || video.poster;
 
-        const description = document.createElement('p');
-        description.textContent = video.description || '';
-
-        content.append(category, title, description);
-        card.append(cover, content);
-        grid.append(card);
-      });
+    if (imageUrl) {
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.onerror = () => {
+        cover.replaceChildren();
+        const placeholder = document.createElement('span');
+        placeholder.className = 'archive-cover-placeholder';
+        placeholder.textContent = 'MOVIRAQ';
+        cover.append(placeholder);
+      };
+      cover.append(img);
+    } else {
+      const placeholder = document.createElement('span');
+      placeholder.className = 'archive-cover-placeholder';
+      placeholder.textContent = 'MOVIRAQ';
+      cover.append(placeholder);
     }
+
+    const content = document.createElement('div');
+    content.className = 'archive-card-content';
+
+    const category = document.createElement('div');
+    category.className = 'archive-category';
+    category.textContent = video.itemType === 'series'
+      ? 'Сериал'
+      : (categoryNames[video.category] || 'Видео');
+
+    const title = document.createElement('h2');
+    title.textContent = video.title;
+
+    const description = document.createElement('p');
+    description.textContent = video.description || '';
+
+    content.append(category, title, description);
+    card.append(cover, content);
+    grid.append(card);
+  });
+}
+
 
     filterButtons.forEach(button => {
       button.addEventListener('click', () => {
@@ -403,27 +425,42 @@
     const params = new URLSearchParams(window.location.search);
     const requestedCategory = params.get('category');
 
-    fetch('videos.json')
-      .then(response => {
-        if (!response.ok) throw new Error('Не удалось загрузить каталог');
-        return response.json();
-      })
-      .then(data => {
-        videos = Array.isArray(data.videos) ? data.videos : [];
-        console.log('MOVIRAQ: загружено видео:', videos.length, videos);
+   
+Promise.all([
+  fetch('videos.json').then(response => {
+    if (!response.ok) throw new Error('Не удалось загрузить каталог видео');
+    return response.json();
+  }),
+  fetch('series.json').then(response => {
+    if (!response.ok) throw new Error('Не удалось загрузить каталог сериалов');
+    return response.json();
+  })
+])
+  .then(([videoData, seriesData]) => {
+    videos = Array.isArray(videoData.videos) ? videoData.videos : [];
+    series = Array.isArray(seriesData.series) ? seriesData.series : [];
 
-        if (requestedCategory === 'programs') selectedCategory = 'programs';
+    if (requestedCategory === 'programs') {
+      selectedCategory = 'programs';
+    } else if (requestedCategory === 'series') {
+      selectedCategory = 'series';
+    }
 
-        filterButtons.forEach(item =>
-          item.classList.toggle('active', item.dataset.category === selectedCategory)
-        );
+    filterButtons.forEach(item =>
+      item.classList.toggle(
+        'active',
+        item.dataset.category === selectedCategory
+      )
+    );
 
-        renderVideos();
-      })
-      .catch(() => {
-        grid.replaceChildren();
-        empty.hidden = false;
-      });
+    renderVideos();
+  })
+  .catch(error => {
+    console.error('Ошибка загрузки MOVIRAQ:', error);
+    grid.replaceChildren();
+    empty.hidden = false;
+    empty.textContent = 'Не удалось загрузить каталог. Проверьте videos.json и series.json.';
+  });
   </script>
 </body>
 </html>
