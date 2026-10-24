@@ -35,8 +35,29 @@
               "embedUrl": ""
             }            
           ]
+        }      
+      ]
+    },
+    {
+      "id": "my-second-series",
+      "title": "Название второго сериала",
+      "description": "Описание второго сериала.",
+      "poster": "",
+      "published": true,
+      "seasons": [
+        {
+          "number": 1,
+          "episodes": [
+            {
+              "number": 1,
+              "title": "Первая серия",
+              "vkUrl": "",
+              "embedUrl": ""
+            }
+          ]
         }
       ]
     }
   ]
 }
+
