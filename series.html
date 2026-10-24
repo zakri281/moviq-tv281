@@ -198,15 +198,20 @@
         return;
       }
 
-      try {
-        const url = new URL(episode.embedUrl);
-        if (
-          url.protocol !== 'https:' ||
-          !['vkvideo.ru', 'vk.com', 'vk.ru'].includes(url.hostname)
-        ) {
-          showMessage('Ссылка на плеер некорректна.');
-          return;
-        }
+
+if (
+  url.protocol !== 'https:' ||
+  ![
+    'vkvideo.ru',
+    'live.vkvideo.ru',
+    'vk.com',
+    'vk.ru'
+  ].includes(url.hostname)
+) {
+  showMessage('Ссылка на плеер некорректна.');
+  return;
+}
+
 
         const iframe = document.createElement('iframe');
         iframe.src = url.href;
