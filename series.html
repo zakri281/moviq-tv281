@@ -251,7 +251,8 @@ function playEpisode(episode) {
 
         const number = document.createElement('span');
         number.className = 'episode-number';
-        number.textContent = 'Серия ' + episode.number;
+        number.textContent =
+  'Сезон ' + season.number + ' · Серия ' + episode.number;
 
         const title = document.createElement('span');
         title.className = 'episode-title';
