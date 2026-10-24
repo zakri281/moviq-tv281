@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080808">
+  <title>Сериал — MOVIRAQ</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #080808;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    header {
+      padding: 20px;
+      border-bottom: 1px solid #292929;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      color: #ed3434;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .back { color: #ccc; font-size: 14px; }
+
+    main {
+      width: min(100% - 32px, 1100px);
+      margin: 28px auto 60px;
+    }
+
+    .series-info { margin-bottom: 22px; }
+
+    h1 { margin: 0 0 10px; font-size: clamp(26px, 5vw, 38px); }
+
+    .description {
+      color: #aaa;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .player-wrap {
+      background: #000;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      margin-bottom: 22px;
+    }
+
+    .player-wrap iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .player-message {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      text-align: center;
+      color: #aaa;
+    }
+
+    .episode-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 26px 0 14px;
+    }
+
+    h2 { margin: 0; font-size: 22px; }
+
+    select {
+      background: #171717;
+      color: white;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 11px;
+      font-size: 15px;
+    }
+
+    .episodes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .episode {
+      display: block;
+      padding: 16px;
+      min-height: 86px;
+      text-align: left;
+      background: #151515;
+      border: 1px solid #303030;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .episode:hover,
+    .episode.active {
+      border-color: #ed3434;
+      background: #241010;
+    }
+
+    .episode-number {
+      display: block;
+      color: #ed3434;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .episode-title { line-height: 1.4; }
+
+    .status { color: #aaa; padding: 18px 0; }
+
+    @media (max-width: 500px) {
+      header { padding: 16px; }
+      main { width: calc(100% - 24px); margin-top: 20px; }
+      .episodes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="videos.html">MOVIRAQ</a>
+    <a class="back" href="videos.html">← Назад в каталог</a>
+  </header>
+
+  <main>
+    <section class="series-info">
+      <h1 id="series-title">Загрузка сериала…</h1>
+      <p class="description" id="series-description"></p>
+    </section>
+
+    <div class="player-wrap" id="player">
+      <div class="player-message">Загружаем сериал…</div>
+    </div>
+
+    <div class="episode-heading">
+      <h2>Серии</h2>
+      <select id="season-select" aria-label="Выбрать сезон" hidden></select>
+    </div>
+
+    <div class="episodes" id="episodes"></div>
+    <p class="status" id="status" role="status"></p>
+  </main>
+
+  <script>
+    const titleElement = document.getElementById('series-title');
+    const descriptionElement = document.getElementById('series-description');
+    const player = document.getElementById('player');
+    const seasonSelect = document.getElementById('season-select');
+    const episodesElement = document.getElementById('episodes');
+    const statusElement = document.getElementById('status');
+
+    let currentSeries = null;
+    let currentSeason = 0;
+    let currentEpisode = null;
+
+    function showMessage(message) {
+      player.replaceChildren();
+      const box = document.createElement('div');
+      box.className = 'player-message';
+      box.textContent = message;
+      player.append(box);
+    }
+
+    function playEpisode(episode) {
+      currentEpisode = episode;
+      episodesElement.querySelectorAll('.episode').forEach(button => {
+        button.classList.toggle(
+          'active',
+          Number(button.dataset.number) === Number(episode.number)
+        );
+      });
+
+      if (!episode.embedUrl) {
+        showMessage('Для этой серии пока не добавлена ссылка на плеер.');
+        return;
+      }
+
+      try {
+        const url = new URL(episode.embedUrl);
+        if (
+          url.protocol !== 'https:' ||
+          !['vkvideo.ru', 'vk.com', 'vk.ru'].includes(url.hostname)
+        ) {
+          showMessage('Ссылка на плеер некорректна.');
+          return;
+        }
+
+        const iframe = document.createElement('iframe');
+        iframe.src = url.href;
+        iframe.title = episode.title || 'Серия сериала';
+        iframe.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
+        iframe.allowFullscreen = true;
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+
+        player.replaceChildren(iframe);
+        statusElement.textContent =
+          'Серия ' + episode.number + ': ' + (episode.title || '');
+      } catch {
+        showMessage('Не удалось прочитать ссылку на плеер.');
+      }
+    }
+
+    function renderSeason() {
+      const season = currentSeries.seasons[currentSeason];
+      episodesElement.replaceChildren();
+
+      if (!season || !Array.isArray(season.episodes) ||
+          season.episodes.length === 0) {
+        statusElement.textContent = 'В этом сезоне пока нет серий.';
+        showMessage('Серии пока не добавлены.');
+        return;
+      }
+
+      season.episodes.forEach(episode => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'episode';
+        button.dataset.number = episode.number;
+
+        const number = document.createElement('span');
+        number.className = 'episode-number';
+        number.textContent = 'Серия ' + episode.number;
+
+        const title = document.createElement('span');
+        title.className = 'episode-title';
+        title.textContent = episode.title || ('Серия ' + episode.number);
+
+        button.append(number, title);
+        button.addEventListener('click', () => playEpisode(episode));
+        episodesElement.append(button);
+      });
+
+      const firstEpisode = season.episodes[0];
+      playEpisode(firstEpisode);
+    }
+
+    seasonSelect.addEventListener('change', () => {
+      currentSeason = Number(seasonSelect.value);
+      renderSeason();
+    });
+
+    async function init() {
+      const id = new URLSearchParams(location.search).get('id');
+
+      if (!id) {
+        titleElement.textContent = 'Сериал не указан';
+        showMessage('Откройте страницу сериала по ссылке из каталога.');
+        return;
+      }
+
+      try {
+        const response = await fetch('series.json');
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+
+        const data = await response.json();
+        const allSeries = Array.isArray(data.series) ? data.series : [];
+        currentSeries = allSeries.find(item =>
+          item.id === id && item.published === true
+        );
+
+        if (!currentSeries) {
+          titleElement.textContent = 'Сериал не найден';
+          showMessage('Проверьте ID сериала и поле published в series.json.');
+          return;
+        }
+
+        titleElement.textContent = currentSeries.title || 'Сериал';
+        descriptionElement.textContent = currentSeries.description || '';
+
+        if (!Array.isArray(currentSeries.seasons) ||
+            currentSeries.seasons.length === 0) {
+          statusElement.textContent = 'Сезоны пока не добавлены.';
+          showMessage('Сезоны пока не добавлены.');
+          return;
+        }
+
+        currentSeries.seasons.sort((a, b) => a.number - b.number);
+
+        currentSeries.seasons.forEach((season, index) => {
+          const option = document.createElement('option');
+          option.value = String(index);
+          option.textContent = 'Сезон ' + season.number;
+          seasonSelect.append(option);
+        });
+
+        seasonSelect.hidden = currentSeries.seasons.length < 2;
+        currentSeason = 0;
+        renderSeason();
+      } catch (error) {
+        titleElement.textContent = 'Не удалось загрузить сериал';
+        showMessage('Проверьте файл series.json и правильность JSON.');
+        statusElement.textContent = error.message;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
