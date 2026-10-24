@@ -1,0 +1,42 @@
+
+{
+  "series": [
+    {
+      "id": "example-series",
+      "title": "Название сериала",
+      "description": "Описание сериала.",
+      "poster": "",
+      "published": true,
+      "seasons": [
+        {
+          "number": 1,
+          "episodes": [
+            {
+              "number": 1,
+              "title": "Первая серия",
+              "vkUrl": "",
+              "embedUrl": ""
+            },
+            {
+              "number": 2,
+              "title": "Вторая серия",
+              "vkUrl": "",
+              "embedUrl": ""
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "episodes": [
+            {
+              "number": 1,
+              "title": "Первая серия",
+              "vkUrl": "",
+              "embedUrl": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
